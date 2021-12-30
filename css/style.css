@@ -1,15 +1,43 @@
+*{
+  font-family: 'Common Pixel', sans-serif;
+}
+
+.point-scored{
+  background-color: red;
+}
+
+.score-text{
+  position: absolute;
+  left: 50%;
+  top: -70px;
+  transform: translate(-50%, 0);
+  font-size: 8em;
+  z-index: -1;
+}
+
 .paddle {
   background-color: red;
-  width: 2vh;
+  width: 15px;
   height: 16vh;
   position: absolute;
-  top: 40%;
 }
 
 .left {
-  left: 2vw;
+  left: 15px;
+  top: 40%;
 }
 
 .right {
-  right: 2vw;
+  right: 15px;
+  top: 40%;
+}
+
+.ball {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: black;
+  position: absolute;
+  left: 10vw;
+  top: 50vh;
 }
