@@ -17,18 +17,18 @@
 
 .paddle {
   background-color: red;
-  width: 15px;
+  width: 20px;
   height: 16vh;
   position: absolute;
 }
 
 .left {
-  left: 15px;
+  left: 10px;
   top: 40%;
 }
 
 .right {
-  right: 15px;
+  right: 10px;
   top: 40%;
 }
 
@@ -40,4 +40,5 @@
   position: absolute;
   left: 10vw;
   top: 50vh;
+  mix-blend-mode: luminosity;
 }

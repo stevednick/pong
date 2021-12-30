@@ -1,7 +1,6 @@
-// do we need these as variables?
+
 var width = 0;
 var height = 0;
-
 
 var scores = [0, 0];
 
@@ -10,12 +9,12 @@ const controlKeys = [81, 65, 38, 40];
 var currentPressedKeys = [];
 
 // Paddle variables
-//var paddles = document.querySelectorAll(".paddle");
 var paddlePositions = [40, 40];
 var paddleVelocities = [0, 0];
-var paddleMaxSpeed = 20;
-var paddleAcceleration = 2.5;
-var paddleDeceleration = 0.93;
+var paddleMaxSpeed = 8;
+var paddleAcceleration = 0.3; // Rejig all these values with the boys...
+
+var paddleDeceleration = 0.975; /// Change this to paddle decay amount. Should feel more smooth?
 var paddleSpeed = 12;
 var paddleLengths = [0, 0];
 var paddleScreenRatio = [5, 5];
@@ -24,13 +23,13 @@ var paddleGap = 30;
 
 // Ball variables
 var ballSize = 20;
-var ballSpeed = 20;
-var ballStartingSpeed = 20;
+var ballSpeed = 3;
+var ballStartingSpeed = 5;
 var ballPosition = [100, 50];
-var ballDirection = 0.5;
+var ballDirection = 0.5; // rejig spin and speed with the lads. 
 var ballSpin = 0;
-var spinDecay = 0.98;
-var spinAdded = 0.0012;
+var spinDecay = 0.995;
+var spinAdded = 0.001;
 
 /* ----------    Event Listeners   -------------- */
 
@@ -57,7 +56,7 @@ setup();
 let timer = setInterval(function() {
   movePaddles();
   moveBall();
-}, 20);
+}, 1);
 
 
 // ---------      Paddle Functions        --------
@@ -177,7 +176,7 @@ function moveBall(){
   }
 }
 
-// ball/paddle interactions
+// Ball/Paddle interactions
 
 function getBallPositionOnPaddle(paddle){
   var paddleCentre = paddlePositions[paddle] + paddleLengths[paddle]/2;
@@ -208,13 +207,14 @@ function displayScores() {
 // Calculations
 
 function resize(){
-  width = window.innerWidth
-  || document.documentElement.clientWidth
-  || document.body.clientWidth;
 
-  height = window.innerHeight
-  || document.documentElement.clientHeight
-  || document.body.clientHeight;
+  width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+  height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+  $(".ball").css({width: ballSize, height: ballSize});
+  paddleLengths[0] = height/paddleScreenRatio[0];
+  paddleLengths[1] = height/paddleScreenRatio[1];
+  $(".left").css("height", paddleLengths[0]);
+  $(".right").css("height", paddleLengths[1]);
 }
 
 function reverseValue(paddle){
@@ -227,11 +227,7 @@ function getRandomAngle(isGoingLeft){
   return randomAngle;
 }
 function setup(){
-  ballDirection = getRandomAngle(false);
-  $(".ball").css({width: ballSize, height: ballSize});
-  paddleLengths[0] = height/paddleScreenRatio[0];
-  paddleLengths[1] = height/paddleScreenRatio[1];
-  $(".left").css("height", paddleLengths[0]);
-  $(".right").css("height", paddleLengths[1]);
   resize();
+  ballSpeed = ballStartingSpeed;
+  ballDirection = getRandomAngle(false);
 }
