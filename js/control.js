@@ -1,8 +1,9 @@
-
+// Add reset for when ball gets stuck...
 var width = 0;
 var height = 0;
 
 var scores = [0, 0];
+var gameLength = 2;
 
 // Control variables
 const controlKeys = [81, 65, 38, 40];
@@ -11,10 +12,10 @@ var currentPressedKeys = [];
 // Paddle variables
 var paddlePositions = [40, 40];
 var paddleVelocities = [0, 0];
-var paddleMaxSpeed = 8;
-var paddleAcceleration = 0.3; // Rejig all these values with the boys...
+var paddleMaxSpeed = 6;
+var paddleAcceleration = 0.18; // Rejig all these values with the boys...
 
-var paddleDeceleration = 0.975; /// Change this to paddle decay amount. Should feel more smooth?
+var paddleDeceleration = 0.96; /// Change this to paddle decay amount. Should feel more smooth?
 var paddleSpeed = 12;
 var paddleLengths = [0, 0];
 var paddleScreenRatio = [5, 5];
@@ -26,16 +27,35 @@ var ballSize = 20;
 var ballSpeed = 3;
 var ballStartingSpeed = 5;
 var ballPosition = [100, 50];
-var ballDirection = 0.5; // rejig spin and speed with the lads. 
+var ballDirection = 0.5; // rejig spin and speed with the lads.
 var ballSpin = 0;
 var spinDecay = 0.995;
-var spinAdded = 0.001;
+var spinAdded = 0.0012;
+var ballStuck = false;
+var ballStuckDelay = 3000;
+var ballStuckTimeout;
+
+var gameStarted = false;
+var gameOver = false;
+
 
 /* ----------    Event Listeners   -------------- */
 
 $(document).keydown(function(event) {
   if (controlKeys.includes(event.keyCode) && currentPressedKeys.includes(event.keyCode) == false){
     currentPressedKeys.push(event.keyCode);
+  }
+  if (ballStuck){
+    var side = (ballPosition[0] > width/2 ? 1 : 0);
+    if ((event.keyCode == 83 && !side)||(event.keyCode == 37 && side)){
+      ballDirection = getRandomAngle(side);
+      resetTimeout();
+    }
+  }
+  if (!gameStarted && event.keyCode == 83){
+    ballSpeed = ballStartingSpeed;
+    gameStarted = true;
+    $(".reset-text").text("");
   }
 });
 
@@ -149,6 +169,7 @@ function moveBall(){
     ballPosition[0] = (side ? width - paddleGap - 5 - ballSize : paddleGap + 5);
     addBallDeflection(getBallPositionOnPaddle(side), side);
     addSpin(side);
+    resetTimeout();
   }
 
   function goalScored(side){
@@ -156,6 +177,14 @@ function moveBall(){
     ballDirection = getRandomAngle(side);
     scores[(side ? 0 : 1)] += 1;
     displayScores();
+    resetTimeout();
+    if (scores[0] >= gameLength){
+      $(".reset-text").text("LEFT WINS");
+      ballSpeed = 0;
+    } else if (scores[1] >= gameLength){
+      $(".reset-text").text("RIGHT WINS");
+      ballSpeed = 0;
+    }
   }
 
   function keepBallWithinBounds(){
@@ -174,6 +203,18 @@ function moveBall(){
   function displayBall() {
     $(".ball").css({left: ballPosition[0], top: ballPosition[1]});
   }
+}
+
+function resetTimeout(){
+  ballStuck = false;
+  if (ballStuckTimeout) {
+    clearTimeout(ballStuckTimeout);
+    $(".reset-text").text("");
+  }
+  ballStuckTimeout = setTimeout(function(){
+    ballStuck = true;
+    $(".reset-text").text("SLAM!");
+  }, ballStuckDelay);
 }
 
 // Ball/Paddle interactions
@@ -228,6 +269,7 @@ function getRandomAngle(isGoingLeft){
 }
 function setup(){
   resize();
-  ballSpeed = ballStartingSpeed;
+  ballSpeed = 0;
   ballDirection = getRandomAngle(false);
+  $(".reset-text").text("PRESS S TO START");
 }
